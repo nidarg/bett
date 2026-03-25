@@ -10,9 +10,9 @@ function HomePage() {
 
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-  
+  const API_URL = import.meta.env.VITE_API_URL
+
   const onSubmit = async (data) => {
-    const API_URL = import.meta.env.VITE_API_URL
 
     try {
       setLoading(true)
