@@ -10,13 +10,15 @@ function HomePage() {
 
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState("")
-
+  
   const onSubmit = async (data) => {
+    const API_URL = import.meta.env.VITE_API_URL
+
     try {
       setLoading(true)
       setErrorMessage("")
 
-      const response = await fetch("http://localhost:3000/api/subscribe", {
+      const response = await fetch(`${API_URL}/api/subscribe`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
