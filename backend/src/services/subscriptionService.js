@@ -1,10 +1,10 @@
 import stripe from "../config/stripe.js"
 
 export const createSubscription = async (email) => {
-  console.log("Creating checkout for:", email)
-  console.log("Secret key exists:", !!process.env.STRIPE_SECRET_KEY)
-  console.log("Price ID:", process.env.STRIPE_PRICE_ID)
-  console.log("Frontend URL:", process.env.FRONTEND_URL)
+  // console.log("Creating checkout for:", email)
+  // console.log("Secret key exists:", !!process.env.STRIPE_SECRET_KEY)
+  // console.log("Price ID:", process.env.STRIPE_PRICE_ID)
+  // console.log("Frontend URL:", process.env.FRONTEND_URL)
 
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
