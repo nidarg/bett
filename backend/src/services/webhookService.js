@@ -1,4 +1,6 @@
-export const processStripeEvent = (event) => {
+import { createSubscriber } from "./subscriberService.js"
+
+export const processStripeEvent = async (event) => {
   console.log("Stripe event received:", event.type)
 
   switch (event.type) {
@@ -10,6 +12,15 @@ export const processStripeEvent = (event) => {
       console.log("Customer ID:", session.customer)
       console.log("Subscription ID:", session.subscription)
       console.log("Customer Email:", session.customer_email)
+
+      const subscriber = await createSubscriber({
+        email: session.customer_email,
+        stripeCustomerId: session.customer,
+        stripeSubscriptionId: session.subscription,
+        status: "trialing"
+      })
+
+      console.log("Subscriber saved in database:", subscriber)
 
       break
     }

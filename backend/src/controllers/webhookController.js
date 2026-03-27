@@ -1,7 +1,7 @@
 import stripe from "../config/stripe.js"
 import { processStripeEvent } from "../services/webhookService.js"
 
-export const handleStripeWebhook = (req, res) => {
+export const handleStripeWebhook = async (req, res) => {
   const signature = req.headers["stripe-signature"]
 
   try {
@@ -11,11 +11,9 @@ export const handleStripeWebhook = (req, res) => {
       process.env.STRIPE_WEBHOOK_SECRET
     )
 
-    // trimitem eventul către service
-    processStripeEvent(event)
+    await processStripeEvent(event)
 
     res.json({ received: true })
-
   } catch (error) {
     console.error("Webhook error:", error.message)
     res.status(400).send(`Webhook Error: ${error.message}`)
