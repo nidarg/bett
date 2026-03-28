@@ -1,4 +1,5 @@
 import supabase from "../config/supabase.js"
+import { generateActivationToken } from "../utils/generateToken.js"
 
 export const createSubscriber = async ({
   email,
@@ -6,6 +7,9 @@ export const createSubscriber = async ({
   stripeSubscriptionId,
   status = "trialing"
 }) => {
+
+  const token = generateActivationToken()
+
   const { data, error } = await supabase
     .from("subscribers")
     .insert([
@@ -13,7 +17,8 @@ export const createSubscriber = async ({
         email,
         stripe_customer_id: stripeCustomerId,
         stripe_subscription_id: stripeSubscriptionId,
-        status
+        status,
+        activation_token: token
       }
     ])
     .select()

@@ -20,7 +20,7 @@ export const processStripeEvent = async (event) => {
         status: "trialing"
       })
 
-      console.log("Subscriber saved in database:", subscriber)
+      console.log("Subscriber saved ", subscriber)
 
       break
     }
