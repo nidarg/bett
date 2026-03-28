@@ -30,3 +30,17 @@ export const createSubscriber = async ({
 
   return data
 }
+
+export const getSubscriberByToken = async (token) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .select("*")
+    .eq("activation_token", token)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}

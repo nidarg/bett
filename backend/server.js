@@ -3,6 +3,7 @@ import cors from "cors"
 import "dotenv/config"
 import subscribeRoutes from "./src/routes/subscribeRoutes.js"
 import webhookRoutes from "./src/routes/webhookRoutes.js"
+import activationRoutes from "./src/routes/activationRoutes.js "
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -13,6 +14,7 @@ app.use("/webhook", webhookRoutes)
 app.use(express.json())
 
 app.use("/api", subscribeRoutes)
+app.use("/api", activationRoutes)
 
 app.get("/", (req, res) => {
   res.send("API running")
