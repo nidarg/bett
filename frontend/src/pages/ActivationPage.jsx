@@ -101,11 +101,14 @@ function ActivationPage() {
                 În pasul următor vei conecta contul tău de Telegram pentru a primi acces la canalul privat.
               </p>
 
-              <button
-                className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg font-semibold"
-              >
-                Conectează Telegram
-              </button>
+           
+                <a href={`https://t.me/live_betting_insights_bot?start=${token}`} target="_blank" rel="noopener noreferrer" className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg font-semibold inline-block">
+              
+                  Conectează Telegram
+
+                </a>
+               
+             
             </>
           )}
 
