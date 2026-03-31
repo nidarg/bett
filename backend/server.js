@@ -3,7 +3,7 @@ import cors from "cors"
 import "dotenv/config"
 import subscribeRoutes from "./src/routes/subscribeRoutes.js"
 import webhookRoutes from "./src/routes/webhookRoutes.js"
-import activationRoutes from "./src/routes/activationRoutes.js "
+import activationRoutes from "./src/routes/activationRoutes.js"
 import {initTelegramBot} from "./src/services/telegramService.js"
 
 
