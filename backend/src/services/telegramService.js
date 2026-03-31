@@ -6,6 +6,7 @@ export const initTelegramBot = () => {
   bot.onText(/\/start(?:\s+(.+))?/, async (msg, match) => {
     const chatId = msg.chat.id
     const token = match?.[1]
+    const telegramUsername = msg.from?.username || null
 
     console.log("Telegram /start received")
     console.log("Chat ID:", chatId)
@@ -24,7 +25,10 @@ export const initTelegramBot = () => {
 
       await supabase
         .from("subscribers")
-        .update({ telegram_id: chatId })
+        .update({
+          telegram_id: chatId,
+          telegram_username: telegramUsername
+        })
         .eq("activation_token", token)
 
       await bot.sendMessage(
@@ -40,4 +44,11 @@ export const initTelegramBot = () => {
       )
     }
   })
+
+  // https://t.me/+qjQknIIltcswODlk
+  bot.on("message", (msg) => {
+  console.log("CHAT ID:", msg.chat.id)
+  console.log("CHAT TYPE:", msg.chat.type)
+})
+
 }
