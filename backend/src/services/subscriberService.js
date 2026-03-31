@@ -1,5 +1,3 @@
-
-
 import supabase from "../config/supabase.js"
 import { generateActivationToken } from "../utils/generateToken.js"
 
@@ -46,11 +44,26 @@ export const createOrUpdateSubscriber = async ({
 
   return data
 }
+
 export const getSubscriberByToken = async (token) => {
   const { data, error } = await supabase
     .from("subscribers")
     .select("*")
     .eq("activation_token", token)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const getSubscriberBySubscriptionId = async (stripeSubscriptionId) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .select("*")
+    .eq("stripe_subscription_id", stripeSubscriptionId)
     .single()
 
   if (error) {
@@ -94,6 +107,24 @@ export const saveSubscriberInviteLink = async ({
       telegram_invite_expires_at: expiresAt
     })
     .eq("activation_token", token)
+    .select()
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const clearSubscriberInviteLink = async ({ stripeSubscriptionId }) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .update({
+      telegram_invite_link: null,
+      telegram_invite_expires_at: null
+    })
+    .eq("stripe_subscription_id", stripeSubscriptionId)
     .select()
     .single()
 

@@ -1,4 +1,5 @@
-import { createOrUpdateSubscriber } from "./subscriberService.js"
+import { createOrUpdateSubscriber, clearSubscriberInviteLink } from "./subscriberService.js"
+import { revokeTelegramAccess } from "./telegramAccessService.js"
 
 export const processStripeEvent = async (event) => {
   console.log("Stripe event received:", event.type)
@@ -6,12 +7,6 @@ export const processStripeEvent = async (event) => {
   switch (event.type) {
     case "checkout.session.completed": {
       const session = event.data.object
-
-      console.log("Checkout completed")
-      console.log("Session ID:", session.id)
-      console.log("Customer ID:", session.customer)
-      console.log("Subscription ID:", session.subscription)
-      console.log("Customer Email:", session.customer_email)
 
       const subscriber = await createOrUpdateSubscriber({
         email: session.customer_email,
@@ -27,21 +22,34 @@ export const processStripeEvent = async (event) => {
     case "customer.subscription.updated": {
       const subscription = event.data.object
 
-      await createOrUpdateSubscriber({
+      const subscriber = await createOrUpdateSubscriber({
         email: null,
         stripeCustomerId: subscription.customer,
         stripeSubscriptionId: subscription.id,
         status: subscription.status
       })
 
-      console.log("Subscription updated:", subscription.id)
+      console.log("Subscription updated:", subscription.id, subscription.status)
+
+      if (["past_due", "unpaid", "incomplete_expired", "canceled"].includes(subscription.status)) {
+        if (subscriber?.telegram_id) {
+          await revokeTelegramAccess({
+            telegramId: subscriber.telegram_id
+          })
+        }
+
+        await clearSubscriberInviteLink({
+          stripeSubscriptionId: subscription.id
+        })
+      }
+
       break
     }
 
     case "customer.subscription.deleted": {
       const subscription = event.data.object
 
-      await createOrUpdateSubscriber({
+      const subscriber = await createOrUpdateSubscriber({
         email: null,
         stripeCustomerId: subscription.customer,
         stripeSubscriptionId: subscription.id,
@@ -49,11 +57,24 @@ export const processStripeEvent = async (event) => {
       })
 
       console.log("Subscription canceled:", subscription.id)
+
+      if (subscriber?.telegram_id) {
+        await revokeTelegramAccess({
+          telegramId: subscriber.telegram_id
+        })
+      }
+
+      await clearSubscriberInviteLink({
+        stripeSubscriptionId: subscription.id
+      })
+
       break
     }
 
     case "invoice.payment_failed": {
-      console.log("Payment failed")
+      const invoice = event.data.object
+
+      console.log("Payment failed for subscription:", invoice.subscription)
       break
     }
 

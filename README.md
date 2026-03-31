@@ -1088,3 +1088,216 @@ securitate prin webhook verification
 rezistență la duplicate
 control al accesului Telegram
 bază solidă pentru extindere ulterioară
+
+
+# Revocare automată acces Telegram la anulare / payment failure
+
+## Obiectiv
+
+Când Stripe trimite unul dintre evenimentele:
+
+- `customer.subscription.deleted`
+- `invoice.payment_failed`
+
+aplicația trebuie să:
+
+1. identifice subscriberul afectat
+2. găsească `telegram_id`
+3. scoată acel user din canal / grupul Telegram
+4. invalideze / curețe invite link-ul din baza de date
+5. actualizeze statusul abonamentului în Supabase
+
+---
+
+# Important de știut înainte
+
+## 1. Telegram channel vs Telegram group
+
+Telegram Bot API are limitări.
+
+### Dacă folosești **grup / supergroup**
+Botul poate:
+- bana userul
+- scoate userul
+- restricționa userul
+
+### Dacă folosești **canal**
+Botul nu poate gestiona membrii la fel de flexibil ca într-un grup. În practică, pentru control automat al accesului, cel mai simplu este să folosești un:
+
+- **private supergroup**
+
+nu un simplu channel clasic.
+
+## Recomandare
+
+Pentru acces controlat automat, folosește:
+
+- **private Telegram supergroup**
+- botul să fie admin
+- botul să aibă permisiuni de:
+  - invite users via link
+  - ban users
+  - manage chat
+
+---
+
+# Ce trebuie să adăugăm
+
+Vom adăuga:
+
+1. funcții noi în `subscriberService.js`
+2. un nou service `telegramAccessService.js`
+3. update în `webhookService.js`
+
+---
+
+# 1. `subscriberService.js` — funcții noi
+
+Adaugă funcțiile de mai jos.
+
+```js
+import supabase from "../config/supabase.js"
+import { generateActivationToken } from "../utils/generateToken.js"
+
+export const createOrUpdateSubscriber = async ({
+  email,
+  stripeCustomerId,
+  stripeSubscriptionId,
+  status = "trialing"
+}) => {
+  const { data: existing } = await supabase
+    .from("subscribers")
+    .select("*")
+    .eq("stripe_subscription_id", stripeSubscriptionId)
+    .single()
+
+  const activationToken =
+    existing?.activation_token || generateActivationToken()
+
+  const finalEmail = email || existing?.email || null
+
+  const { data, error } = await supabase
+    .from("subscribers")
+    .upsert(
+      [
+        {
+          email: finalEmail,
+          stripe_customer_id: stripeCustomerId,
+          stripe_subscription_id: stripeSubscriptionId,
+          status,
+          activation_token: activationToken
+        }
+      ],
+      {
+        onConflict: "stripe_subscription_id"
+      }
+    )
+    .select()
+    .single()
+
+  if (error) {
+    console.error("Supabase upsert error:", error)
+    throw error
+  }
+
+  return data
+}
+
+export const getSubscriberByToken = async (token) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .select("*")
+    .eq("activation_token", token)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const getSubscriberBySubscriptionId = async (stripeSubscriptionId) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .select("*")
+    .eq("stripe_subscription_id", stripeSubscriptionId)
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const updateSubscriberTelegramConnection = async ({
+  token,
+  chatId,
+  telegramUsername
+}) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .update({
+      telegram_id: chatId,
+      telegram_username: telegramUsername
+    })
+    .eq("activation_token", token)
+    .select()
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const saveSubscriberInviteLink = async ({
+  token,
+  inviteLink,
+  expiresAt
+}) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .update({
+      telegram_invite_link: inviteLink,
+      telegram_invite_expires_at: expiresAt
+    })
+    .eq("activation_token", token)
+    .select()
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const clearSubscriberInviteLink = async ({ stripeSubscriptionId }) => {
+  const { data, error } = await supabase
+    .from("subscribers")
+    .update({
+      telegram_invite_link: null,
+      telegram_invite_expires_at: null
+    })
+    .eq("stripe_subscription_id", stripeSubscriptionId)
+    .select()
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data
+}
+
+export const isInviteLinkStillValid = (subscriber) => {
+  if (!subscriber?.telegram_invite_link || !subscriber?.telegram_invite_expires_at) {
+    return false
+  }
+
+  const expiresAt = new Date(subscriber.telegram_invite_expires_at).getTime()
+  return expiresAt > Date.now()
+}
