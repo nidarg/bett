@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react"
 import { useSearchParams, Link } from "react-router-dom"
 
+const MAX_RETRIES = 5
+const RETRY_DELAY_MS = 2000
+
 function SuccessPage() {
   const [searchParams] = useSearchParams()
   const sessionId = searchParams.get("session_id")
@@ -9,11 +12,14 @@ function SuccessPage() {
   const [activationToken, setActivationToken] = useState("")
   const [subscriber, setSubscriber] = useState(null)
   const [errorMessage, setErrorMessage] = useState("")
+  const [attempt, setAttempt] = useState(1)
 
   const API_URL = import.meta.env.VITE_API_URL
 
   useEffect(() => {
-    const getActivationData = async () => {
+    let timeoutId
+
+    const getActivationData = async (retryCount = 1) => {
       try {
         if (!sessionId) {
           setErrorMessage("Lipsește session_id din URL.")
@@ -21,28 +27,57 @@ function SuccessPage() {
           return
         }
 
+        console.log(`Activation fetch attempt ${retryCount}/${MAX_RETRIES}`)
+
         const response = await fetch(
           `${API_URL}/api/checkout-session?session_id=${sessionId}`
         )
 
         const result = await response.json()
 
-        if (!response.ok || !result.success) {
-          setErrorMessage(result.message || "Nu am putut obține datele de activare.")
+        if (response.ok && result.success && result.activationToken) {
+          setActivationToken(result.activationToken)
+          setSubscriber(result.subscriber)
           setLoading(false)
           return
         }
 
-        setActivationToken(result.activationToken)
-        setSubscriber(result.subscriber)
+        if (retryCount < MAX_RETRIES) {
+          setAttempt(retryCount + 1)
+
+          timeoutId = setTimeout(() => {
+            getActivationData(retryCount + 1)
+          }, RETRY_DELAY_MS)
+
+          return
+        }
+
+        setErrorMessage(
+          result.message ||
+            "Nu am putut obține datele de activare. Te rugăm să reîncerci."
+        )
         setLoading(false)
       } catch (error) {
+        if (retryCount < MAX_RETRIES) {
+          setAttempt(retryCount + 1)
+
+          timeoutId = setTimeout(() => {
+            getActivationData(retryCount + 1)
+          }, RETRY_DELAY_MS)
+
+          return
+        }
+
         setErrorMessage("Nu s-a putut conecta la server.")
         setLoading(false)
       }
     }
 
     getActivationData()
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
   }, [sessionId, API_URL])
 
   return (
@@ -51,9 +86,20 @@ function SuccessPage() {
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-10 border border-white/10 text-center">
           {loading && (
             <>
-              <h1 className="text-4xl font-bold mb-4">Procesăm activarea...</h1>
-              <p className="text-gray-300">
-                Te rugăm să aștepți câteva secunde.
+              <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-500/20 flex items-center justify-center border border-blue-400/30">
+                <span className="text-3xl">⏳</span>
+              </div>
+
+              <h1 className="text-4xl font-bold mb-4">
+                Procesăm activarea...
+              </h1>
+
+              <p className="text-gray-300 mb-3">
+                Confirmăm abonamentul și pregătim accesul către Telegram.
+              </p>
+
+              <p className="text-sm text-gray-400">
+                Încercarea {attempt} din {MAX_RETRIES}
               </p>
             </>
           )}
@@ -64,9 +110,13 @@ function SuccessPage() {
                 <span className="text-3xl">!</span>
               </div>
 
-              <h1 className="text-4xl font-bold mb-4">Activare incompletă</h1>
+              <h1 className="text-4xl font-bold mb-4">
+                Activare incompletă
+              </h1>
 
-              <p className="text-red-300 mb-8">{errorMessage}</p>
+              <p className="text-red-300 mb-8">
+                {errorMessage}
+              </p>
 
               <Link
                 to="/"
@@ -83,7 +133,9 @@ function SuccessPage() {
                 <span className="text-3xl">✓</span>
               </div>
 
-              <h1 className="text-4xl font-bold mb-4">Trial activat</h1>
+              <h1 className="text-4xl font-bold mb-4">
+                Trial activat
+              </h1>
 
               <p className="text-gray-300 text-lg mb-4">
                 Plata a fost procesată cu succes și trialul tău gratuit a început.
@@ -96,8 +148,7 @@ function SuccessPage() {
               )}
 
               <p className="text-gray-400 mb-8">
-                Următorul pas este să validezi activarea și să conectezi contul tău
-                de Telegram pentru a primi acces la canalul privat.
+                Următorul pas este conectarea contului Telegram pentru accesul la canalul privat.
               </p>
 
               <Link
