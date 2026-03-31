@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react"
-import { useSearchParams, Link } from "react-router-dom"
+import {
+  useSearchParams,
+  Link,
+  useNavigate
+} from "react-router-dom"
 
 function ActivationPage() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get("token")
+  const navigate = useNavigate()
 
   const [loading, setLoading] = useState(true)
+  const [connectingTelegram, setConnectingTelegram] = useState(false)
   const [subscriber, setSubscriber] = useState(null)
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -20,11 +26,16 @@ function ActivationPage() {
           return
         }
 
-        const response = await fetch(`${API_URL}/api/activate?token=${token}`)
+        const response = await fetch(
+          `${API_URL}/api/activate?token=${token}`
+        )
+
         const result = await response.json()
 
         if (!response.ok || !result.success) {
-          setErrorMessage(result.message || "Token invalid sau expirat.")
+          setErrorMessage(
+            result.message || "Token invalid sau expirat."
+          )
           setLoading(false)
           return
         }
@@ -40,11 +51,23 @@ function ActivationPage() {
     validateToken()
   }, [token, API_URL])
 
+  const handleTelegramConnect = () => {
+    setConnectingTelegram(true)
+
+    window.open(
+      `https://t.me/live_betting_insights_bot?start=${token}`,
+      "_blank"
+    )
+
+    setTimeout(() => {
+      navigate("/")
+    }, 1000)
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
       <div className="max-w-3xl mx-auto px-6 py-24">
         <div className="bg-white/10 backdrop-blur-lg rounded-xl p-10 border border-white/10 text-center">
-
           {loading && (
             <>
               <h1 className="text-3xl font-bold mb-4">
@@ -93,25 +116,32 @@ function ActivationPage() {
                 Contul asociat cu emailul de mai jos a fost validat cu succes:
               </p>
 
-              <p className="text-blue-300 font-semibold mb-8">
+              <p className="text-blue-300 font-semibold mb-6">
                 {subscriber.email}
               </p>
 
-              <p className="text-gray-400 mb-8">
-                În pasul următor vei conecta contul tău de Telegram pentru a primi acces la canalul privat.
+              <p className="text-gray-400 mb-6">
+                După conectare vei primi linkul privat direct în Telegram.
               </p>
 
-           
-                <a href={`https://t.me/live_betting_insights_bot?start=${token}`} target="_blank" rel="noopener noreferrer" className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg font-semibold inline-block">
-              
-                  Conectează Telegram
+              <button
+                onClick={handleTelegramConnect}
+                disabled={connectingTelegram}
+                className="bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg font-semibold inline-block disabled:opacity-50"
+              >
+                {connectingTelegram
+                  ? "Deschidem Telegram..."
+                  : "Conectează Telegram"}
+              </button>
 
-                </a>
-               
-             
+              <Link
+                to="/"
+                className="block mt-4 text-sm text-gray-400 hover:text-white"
+              >
+                Înapoi la pagina principală
+              </Link>
             </>
           )}
-
         </div>
       </div>
     </div>
