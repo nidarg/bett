@@ -46,7 +46,7 @@ export const initTelegramBot = () => {
   })
 
   // https://t.me/+qjQknIIltcswODlk
-  bot.on("message", (msg) => {
+  bot.on("channel_post", (msg) => {
   console.log("CHAT ID:", msg.chat.id)
   console.log("CHAT TYPE:", msg.chat.type)
 })
