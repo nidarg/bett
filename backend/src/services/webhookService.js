@@ -1,5 +1,6 @@
 import { createOrUpdateSubscriber, clearSubscriberInviteLink } from "./subscriberService.js"
 import { revokeTelegramAccess } from "./telegramAccessService.js"
+import { getSubscriberBySubscriptionId } from "./subscriberService.js"
 
 export const processStripeEvent = async (event) => {
   console.log("Stripe event received:", event.type)

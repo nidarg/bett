@@ -61,7 +61,7 @@ export const initTelegramBot = () => {
     `✅ Contul asociat cu ${subscriber.email} a fost conectat cu succes.`,
     "",
     "🔗 Link privat de acces:",
-    inviteLinkData.inviteLink,
+    subscriber.telegram_invite_link,
     "",
     `⏳ Linkul expiră în ${INVITE_EXPIRE_HOURS} ore.`,
     "👤 Poate fi folosit o singură dată."
