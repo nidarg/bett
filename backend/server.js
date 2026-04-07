@@ -10,7 +10,9 @@ import { initTelegramBot } from "./src/services/telegramService.js"
 const app = express()
 const PORT = process.env.PORT || 3000
 
-app.use(cors())
+app.use(cors({
+  origin: process.env.FRONTEND_URL
+}))
 
 app.use("/webhook", webhookRoutes)
 app.use(express.json())

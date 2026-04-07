@@ -13,14 +13,21 @@ export const activateSubscriber = async (req, res) => {
 
     const subscriber = await getSubscriberByToken(token)
 
-    res.json({
+    if (!["trialing", "active"].includes(subscriber.status)) {
+      return res.status(403).json({
+        success: false,
+        message: "Subscription is not active"
+      })
+    }
+
+    return res.json({
       success: true,
       subscriber
     })
   } catch (error) {
     console.error("Activation error:", error.message)
 
-    res.status(404).json({
+    return res.status(404).json({
       success: false,
       message: "Invalid or expired token"
     })
