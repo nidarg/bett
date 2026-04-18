@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage"
 import SuccessPage from "./pages/SuccessPage"
 import CancelPage from "./pages/CancelPage"
 import ActivationPage from "./pages/ActivationPage"
+import HistoryPage from "./pages/HistoryPage"
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/cancel" element={<CancelPage />} />
         <Route path="/activate" element={<ActivationPage />} />
+        <Route path="/history" element={<HistoryPage />} />
       </Routes>
     </BrowserRouter>
   )
