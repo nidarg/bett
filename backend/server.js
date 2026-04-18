@@ -7,6 +7,8 @@ import activationRoutes from "./src/routes/activationRoutes.js"
 import checkoutRoutes from "./src/routes/checkoutRoutes.js"
 import { initTelegramBot } from "./src/services/telegramService.js"
 import historyRoutes from "./src/routes/historyRoutes.js"
+import testSheetsRoutes from "./src/routes/testSheetsRoutes.js"
+import historySyncRoutes from "./src/routes/historySyncRoutes.js"
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -38,6 +40,8 @@ app.use("/api", subscribeRoutes)
 app.use("/api", activationRoutes)
 app.use("/api", checkoutRoutes)
 app.use("/api", historyRoutes)
+app.use("/api", testSheetsRoutes)
+app.use("/api", historySyncRoutes)
 
 app.get("/", (req, res) => {
   res.send("API running")
