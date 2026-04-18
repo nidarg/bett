@@ -11,9 +11,25 @@ import historyRoutes from "./src/routes/historyRoutes.js"
 const app = express()
 const PORT = process.env.PORT || 3000
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL
-}))
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://smart-bett.vercel.app"
+]
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // permite requests fără origin (Postman, curl etc.)
+      if (!origin) return callback(null, true)
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true)
+      } else {
+        return callback(new Error("Not allowed by CORS"))
+      }
+    }
+  })
+)
 
 app.use("/webhook", webhookRoutes)
 app.use(express.json())

@@ -8,32 +8,40 @@ function HistoryPage() {
 
   const API_URL = import.meta.env.VITE_API_URL
 
-  useEffect(() => {
-    const fetchHistory = async () => {
+useEffect(() => {
+  const fetchHistory = async () => {
+    try {
+      setLoading(true)
+      setError("")
+
+      const response = await fetch(`${API_URL}/api/history?period=${period}`)
+
+      const rawText = await response.text()
+      console.log("History raw response:", rawText)
+
+      let result
+
       try {
-        setLoading(true)
-        setError("")
-
-        const response = await fetch(
-          `${API_URL}/api/history?period=${period}`
-        )
-
-        const result = await response.json()
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || "Eroare la încărcare")
-        }
-
-        setData(result.data)
-      } catch (err) {
-        setError("Nu s-a putut încărca istoricul.")
-      } finally {
-        setLoading(false)
+        result = JSON.parse(rawText)
+      } catch {
+        throw new Error("Backend-ul nu a returnat JSON valid.")
       }
-    }
 
-    fetchHistory()
-  }, [period, API_URL])
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || "Eroare la încărcare")
+      }
+
+      setData(result.data)
+    } catch (err) {
+      console.error("History fetch error:", err)
+      setError(err.message || "Nu s-a putut încărca istoricul.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  fetchHistory()
+}, [period, API_URL])
 
   const getProfitColor = (value) => {
     if (value > 0) return "text-green-400"
