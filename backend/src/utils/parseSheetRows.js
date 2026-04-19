@@ -7,13 +7,18 @@ const REQUIRED_HEADERS = [
   "betDetails",
   "payout",
   "profitLoss",
-  "settledAt"
+  "settledAt",
+  "publishToSite"
 ]
+
+const normalizeHeader = (value) => {
+  return String(value || "").trim().toLowerCase()
+}
 
 const normalizeDate = (value) => {
   if (!value) return null
 
-  const normalized = value.trim().replace(" ", "T")
+  const normalized = String(value).trim().replace(" ", "T")
   const date = new Date(normalized)
 
   if (Number.isNaN(date.getTime())) {
@@ -38,10 +43,16 @@ export const parseSheetRows = (rows) => {
     return []
   }
 
-  const [headerRow, ...dataRows] = rows
+  const [rawHeaderRow, ...dataRows] = rows
+
+  const headerMap = {}
+
+  rawHeaderRow.forEach((header, index) => {
+    headerMap[normalizeHeader(header)] = index
+  })
 
   const missingHeaders = REQUIRED_HEADERS.filter(
-    (header) => !headerRow.includes(header)
+    (header) => !(normalizeHeader(header) in headerMap)
   )
 
   if (missingHeaders.length > 0) {
@@ -53,21 +64,24 @@ export const parseSheetRows = (rows) => {
   return dataRows
     .filter((row) => row.some((cell) => String(cell || "").trim() !== ""))
     .map((row, index) => {
-      const rowObject = Object.fromEntries(
-        headerRow.map((header, columnIndex) => [header, row[columnIndex] || ""])
-      )
+      const getValue = (headerName) => {
+        const columnIndex = headerMap[normalizeHeader(headerName)]
+        return row[columnIndex] || ""
+      }
 
       try {
         return {
-          externalId: rowObject.externalId.trim(),
-          match: rowObject.match.trim(),
-          betType: rowObject.betType.trim(),
-          odds: toNumber(rowObject.odds, "odds"),
-          stake: toNumber(rowObject.stake, "stake"),
-          betDetails: rowObject.betDetails.trim(),
-          payout: toNumber(rowObject.payout, "payout"),
-          profitLoss: toNumber(rowObject.profitLoss, "profitLoss"),
-          settledAt: normalizeDate(rowObject.settledAt)
+          externalId: String(getValue("externalId")).trim(),
+          match: String(getValue("match")).trim(),
+          betType: String(getValue("betType")).trim(),
+          odds: toNumber(getValue("odds"), "odds"),
+          stake: toNumber(getValue("stake"), "stake"),
+          betDetails: String(getValue("betDetails")).trim(),
+          payout: toNumber(getValue("payout"), "payout"),
+          profitLoss: toNumber(getValue("profitLoss"), "profitLoss"),
+          settledAt: normalizeDate(getValue("settledAt")),
+          publishToSite:
+            String(getValue("publishToSite")).trim().toLowerCase() === "true"
         }
       } catch (error) {
         throw new Error(`Row ${index + 2}: ${error.message}`)

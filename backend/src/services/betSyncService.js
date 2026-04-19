@@ -33,8 +33,30 @@ export const syncBetsFromSheet = async () => {
       bets: []
     }
   }
+  // console.log("TOTAL din sheet:", parsedBets.length)
 
-  const betsToUpsert = parsedBets.map(mapSheetBetToDbBet)
+const filteredBets = parsedBets.filter(bet => {
+  return (
+    bet.publishToSite === true &&
+    bet.settledAt
+  )
+})
+
+// console.log("ELIGIBLE pentru sync:", filteredBets.length)
+
+// console.log(
+//   "EXTERNAL IDs sincronizate:",
+//   filteredBets.map(b => b.externalId)
+// )
+
+if (!filteredBets.length) {
+  return {
+    importedCount: 0,
+    message: "No bets eligible for sync"
+  }
+}
+
+const betsToUpsert = filteredBets.map(mapSheetBetToDbBet)
 
   const { data, error } = await supabase
     .from("pariuri_istoric")

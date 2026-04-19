@@ -1,6 +1,15 @@
 import { syncBetsFromSheet } from "../services/betSyncService.js"
 
 export const syncHistoryFromSheet = async (req, res) => {
+  const secret = req.headers["x-sync-secret"]
+
+  if (secret !== process.env.SYNC_SECRET) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized"
+    })
+  }
+
   try {
     const result = await syncBetsFromSheet()
 
