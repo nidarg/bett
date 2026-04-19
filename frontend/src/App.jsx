@@ -8,7 +8,10 @@ import HistoryPage from "./pages/HistoryPage"
 import OpiniePage from "./pages/OpiniePage"
 import StrategiePage from "./pages/StrategiePage"
 import ContactPage from "./pages/ContactPage"
-
+import PrivacyPolicyPage from "./pages/PrivacyPolicyPage"
+import TermsPage from "./pages/TermsPage"
+import RiskPage from "./pages/RiskPage"
+import CookiePage from "./pages/CookiePage"
 function App() {
   return (
     <BrowserRouter>
@@ -24,6 +27,11 @@ function App() {
         <Route path="/success" element={<SuccessPage />} />
         <Route path="/cancel" element={<CancelPage />} />
         <Route path="/activate" element={<ActivationPage />} />
+
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+  <Route path="/terms-and-conditions" element={<TermsPage />} />
+  <Route path="/risk-disclaimer" element={<RiskPage />} />
+  <Route path="/cookie-policy" element={<CookiePage />} />
       </Routes>
     </BrowserRouter>
   )

@@ -189,6 +189,44 @@ function HomePage() {
                 </p>
               )}
 
+              <label className="flex items-start gap-3 mb-4 text-sm text-gray-300">
+    <input
+      type="checkbox"
+      className="mt-1 h-4 w-4 rounded border-gray-600 bg-black/30"
+      {...register("gdprConsent", {
+        required: "Trebuie să accepți Termenii și Politica de confidențialitate."
+      })}
+    />
+
+    <span>
+      Am citit și sunt de acord cu{" "}
+      <a
+        href="/terms-and-conditions"
+        className="underline hover:text-white"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Termenii și condițiile
+      </a>{" "}
+      și cu{" "}
+      <a
+        href="/privacy-policy"
+        className="underline hover:text-white"
+        target="_blank"
+        rel="noreferrer"
+      >
+        Politica de confidențialitate
+      </a>.
+    </span>
+  </label>
+
+  {errors.gdprConsent && (
+    <p className="text-red-400 text-sm mb-3">
+      {errors.gdprConsent.message}
+    </p>
+  )}
+
+
               <button
                 type="submit"
                 disabled={loading}
@@ -196,6 +234,7 @@ function HomePage() {
               >
                 {loading ? "Se încarcă..." : "Start Free Trial"}
               </button>
+   
             </form>
           </div>
 
