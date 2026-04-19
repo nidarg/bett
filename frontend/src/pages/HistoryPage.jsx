@@ -163,9 +163,7 @@ function HistoryPage() {
               </div>
             </div>
 
-            {period !== "monthly" && data.bets?.length > 0 && (
-              <ProfitChart bets={data.bets} />
-            )}
+            
 
             <div className="bg-white/10 backdrop-blur-lg rounded-xl p-6 border border-white/10 mb-8">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -270,6 +268,12 @@ function HistoryPage() {
                   </tbody>
                 </table>
               </div>
+            )}
+             {period !== "monthly" && data.bets?.length > 0 && (
+              <div className="mt-8">
+                <ProfitChart bets={data.bets} />
+              </div>
+              
             )}
           </>
         )}
