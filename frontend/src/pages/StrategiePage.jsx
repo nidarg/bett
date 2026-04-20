@@ -11,13 +11,13 @@ function StrategiePage() {
           <p className="text-green-400">
                Echipa noastra urmareste  meciurile si determina motivatia sportivilor.
           </p>
-          <p className="text-red-700">Casele de pariuri ofera cote mai mari ca 1  cand exista sanse reale sa pierzi.
+          <p className="text-red-900">Casele de pariuri ofera cote mai mari ca 1  cand exista sanse reale sa pierzi.
 </p>
-<p className="text-red-700">Poti sa pierzi pe o cota de 1.01 chiar daca pare cel mai sigur pariu.
+<p className="text-red-900">Poti sa pierzi pe o cota de 1.01 chiar daca pare cel mai sigur pariu.
 </p>
-<p className="text-red-700">Daca esti o persoana emotiva , care nu poate  sa accepte ca pariurile sunt facute sa pierzi NU JUCA!
+<p className="text-red-900">Daca esti o persoana emotiva , care nu poate  sa accepte ca pariurile sunt facute sa pierzi NU JUCA!
 </p>
-<p className="text-red-700">Pe Internet exista sisteme si strategii, 99% sunt minciuni, informatii puse  intentionat sa atraga persoane spre acest domeniu si sa piarda bani.
+<p className="text-red-900">Pe Internet exista sisteme si strategii, 99% sunt minciuni, informatii puse  intentionat sa atraga persoane spre acest domeniu si sa piarda bani.
 </p>
 <p className="text-green-400">Ai nevoie de DISCIPLINA! DISCIPLINA! DISCIPLINA!
 </p>

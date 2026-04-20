@@ -8,11 +8,11 @@ function OpiniePage() {
         <div className="space-y-5 text-gray-300 leading-7">
           <p>
             Experiența noastră cu pariurile sportive justifică pariurile <span className="font-bold text-red-700">"live"</span>.
-           <span className="font-bold text-red-700">1%</span> din cei ce pariaza castiga pe termen lung.
+           <span className="font-bold text-red-900">1%</span> din cei ce pariaza castiga pe termen lung.
           </p>
 
           <p>
-Cotele la pariuri sportive sunt <span className="font-bold text-red-700">CALCULATE</span> impotriva jucatorului.           
+Cotele la pariuri sportive sunt <span className="font-bold text-red-900">CALCULATE</span> impotriva jucatorului.           
  Matematica demostreaza acest lucru, s-au facut studii si simulari.            simulări și suficiente exemple care confirmă acest dezechilibru.
           </p>
 
