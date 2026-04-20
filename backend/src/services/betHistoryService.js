@@ -40,35 +40,61 @@ export const createBet = async ({
   return data
 }
 
-const getDateRangeByPeriod = (period) => {
+const getNowInRomania = () => {
   const now = new Date()
 
-  const start = new Date(now)
-  const end = new Date(now)
+  const roString = now.toLocaleString("en-US", {
+    timeZone: "Europe/Bucharest"
+  })
+
+  return new Date(roString)
+}
+
+const getDateRangeByPeriod = (period) => {
+  const now = getNowInRomania()
 
   if (period === "daily") {
+    const start = new Date(now)
     start.setHours(0, 0, 0, 0)
+
+    const end = new Date(now)
     end.setHours(23, 59, 59, 999)
-    return { start, end }
+
+    return {
+      start: new Date(start.toISOString()),
+      end: new Date(end.toISOString())
+    }
   }
 
   if (period === "weekly") {
     const day = now.getDay()
     const diffToMonday = day === 0 ? 6 : day - 1
 
+    const start = new Date(now)
     start.setDate(now.getDate() - diffToMonday)
     start.setHours(0, 0, 0, 0)
 
+    const end = new Date(now)
     end.setHours(23, 59, 59, 999)
-    return { start, end }
+
+    return {
+      start: new Date(start.toISOString()),
+      end: new Date(end.toISOString())
+    }
   }
 
   if (period === "monthly") {
+    const start = new Date(now)
     start.setDate(1)
     start.setHours(0, 0, 0, 0)
 
+    const end = new Date(now)
     end.setHours(23, 59, 59, 999)
-    return { start, end }
+
+    return {
+      start: new Date(start.toISOString()),
+      end: new Date(end.toISOString())
+    }
   }
 
   throw new Error("Invalid history period")

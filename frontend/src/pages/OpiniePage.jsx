@@ -13,9 +13,9 @@ function OpiniePage() {
           </p>
 
           <p>
-Cotele la pariuri sportive sunt <span className="font-bold text-red-900">CALCULATE</span> impotriva jucatorului.           
- Matematica demostreaza acest lucru, s-au facut studii si simulari.            simulări și suficiente exemple care confirmă acest dezechilibru.
-          </p>
+Cotele la pariuri sportive sunt <span className="font-bold text-red-900">CALCULATE</span> impotriva jucatorului.</p>           
+<p> Matematica demostreaza acest lucru, s-au facut studii si simulari.</p>
+          
 
           <p>
             Exista dovezi si scandaluri in presa despre foarte multe meciuri trucate indiferent de sport.

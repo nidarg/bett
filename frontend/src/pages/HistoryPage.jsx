@@ -84,6 +84,7 @@ function HistoryPage() {
     if (!isoDate) return "-"
 
     return new Date(isoDate).toLocaleDateString("ro-RO", {
+      timeZone: "Europe/Bucharest",
       day: "2-digit",
       month: "2-digit",
       year: "numeric"
