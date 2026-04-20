@@ -7,7 +7,8 @@ function OpiniePage() {
 
         <div className="space-y-5 text-gray-300 leading-7">
           <p>
-            Experiența noastră cu pariurile sportive justifică pariurile <span className="font-bold text-red-700">"live"</span>.
+            Experiența noastră cu pariurile sportive justifică pariurile <span className="font-bold text-red-700">"live"</span>.</p>
+            <p>
            <span className="font-bold text-red-900">1%</span> din cei ce pariaza castiga pe termen lung.
           </p>
 
